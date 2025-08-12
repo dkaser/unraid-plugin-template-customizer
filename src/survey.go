@@ -15,19 +15,34 @@ func surveyConfig() (PluginOptions, error) {
 	fmt.Println()
 
 	pluginNamePrompt := &survey.Input{Message: "Plugin Name (file name):"}
-	_ = survey.AskOne(pluginNamePrompt, &pluginOptions.PluginName, survey.WithValidator(nameValidator))
+	err := survey.AskOne(pluginNamePrompt, &pluginOptions.PluginName, survey.WithValidator(nameValidator))
+	if err != nil {
+		return PluginOptions{}, err
+	}
 	pluginOptions.PluginName = strings.TrimSpace(pluginOptions.PluginName)
 
-	_ = survey.AskOne(&survey.Input{Message: "Display Name:"}, &pluginOptions.DisplayName)
+	err = survey.AskOne(&survey.Input{Message: "Display Name:"}, &pluginOptions.DisplayName)
+	if err != nil {
+		return PluginOptions{}, err
+	}
 
 	packageNamePrompt := &survey.Input{Message: "Package Name (use unraid-pluginname format):"}
-	_ = survey.AskOne(packageNamePrompt, &pluginOptions.PackageName, survey.WithValidator(nameValidator))
+	err = survey.AskOne(packageNamePrompt, &pluginOptions.PackageName, survey.WithValidator(nameValidator))
+	if err != nil {
+		return PluginOptions{}, err
+	}
 	pluginOptions.PackageName = strings.TrimSpace(pluginOptions.PackageName)
 
-	_ = survey.AskOne(&survey.Input{Message: "Author Name:"}, &pluginOptions.AuthorName)
+	err = survey.AskOne(&survey.Input{Message: "Author Name:"}, &pluginOptions.AuthorName)
+	if err != nil {
+		return PluginOptions{}, err
+	}
 
 	supportURLPrompt := &survey.Input{Message: "Support URL (forum thread):"}
-	_ = survey.AskOne(supportURLPrompt, &pluginOptions.SupportURL, survey.WithValidator(urlValidator))
+	err = survey.AskOne(supportURLPrompt, &pluginOptions.SupportURL, survey.WithValidator(urlValidator))
+	if err != nil {
+		return PluginOptions{}, err
+	}
 	pluginOptions.SupportURL = strings.TrimSpace(pluginOptions.SupportURL)
 	if pluginOptions.SupportURL == "" {
 		pluginOptions.SupportURL = "https://forums.unraid.net/"
@@ -35,13 +50,25 @@ func surveyConfig() (PluginOptions, error) {
 
 	fmt.Println()
 	fmt.Println("Optional fields (press Enter to skip):")
-	_ = survey.AskOne(&survey.Input{Message: "Launch Path (e.g., Tools/PluginName):"}, &pluginOptions.LaunchPath)
-	_ = survey.AskOne(&survey.Input{Message: "Font Awesome Icon (e.g., fa-cog) or leave blank for custom icon:"}, &pluginOptions.IconName)
+	err = survey.AskOne(&survey.Input{Message: "Launch Path (e.g., Tools/PluginName):"}, &pluginOptions.LaunchPath)
+	if err != nil {
+		return PluginOptions{}, err
+	}
+	err = survey.AskOne(&survey.Input{Message: "Font Awesome Icon (e.g., fa-cog) or leave blank for custom icon:"}, &pluginOptions.IconName)
+	if err != nil {
+		return PluginOptions{}, err
+	}
 	fmt.Println()
 	fmt.Println("Plugin Description (for installation display):")
-	_ = survey.AskOne(&survey.Input{Message: "Enter a brief description of your plugin:"}, &pluginOptions.Description, survey.WithValidator(descriptionValidator))
+	err = survey.AskOne(&survey.Input{Message: "Enter a brief description of your plugin:"}, &pluginOptions.Description, survey.WithValidator(descriptionValidator))
+	if err != nil {
+		return PluginOptions{}, err
+	}
 
-	_ = survey.AskOne(&survey.Confirm{Message: "Would you like to enable Plugin Diagnostics?", Default: false}, &pluginOptions.SetupDiagnostics)
+	err = survey.AskOne(&survey.Confirm{Message: "Would you like to enable Plugin Diagnostics?", Default: false}, &pluginOptions.SetupDiagnostics)
+	if err != nil {
+		return PluginOptions{}, err
+	}
 
 	// License selection
 	fmt.Println()
@@ -53,7 +80,10 @@ func surveyConfig() (PluginOptions, error) {
 	for i, l := range licenses {
 		licenseOptions[i] = l.Name
 	}
-	_ = survey.AskOne(&survey.Select{Message: "Select a license for your plugin:", Options: licenseOptions}, &pluginOptions.LicenseChoice)
+	err = survey.AskOne(&survey.Select{Message: "Select a license for your plugin:", Options: licenseOptions}, &pluginOptions.LicenseChoice)
+	if err != nil {
+		return PluginOptions{}, err
+	}
 
 	// Show summary before making changes
 	fmt.Println()
@@ -82,7 +112,10 @@ func surveyConfig() (PluginOptions, error) {
 
 	// Final confirmation
 	var proceed bool
-	_ = survey.AskOne(&survey.Confirm{Message: "Proceed with these changes?", Default: true}, &proceed)
+	err = survey.AskOne(&survey.Confirm{Message: "Proceed with these changes?", Default: true}, &proceed)
+	if err != nil {
+		return PluginOptions{}, err
+	}
 	if !proceed {
 		fmt.Println("Setup cancelled. No changes made.")
 		return PluginOptions{}, fmt.Errorf("setup cancelled by user")
